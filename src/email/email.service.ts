@@ -10,7 +10,7 @@ export class EmailService {
     const html = this.generateBookingEmailHtml(data);
 
     await this.mailerService.sendMail({
-      to: process.env.BOOKING_EMAIL_TO || 'florezmnj@gmail.com',
+      to: process.env.BOOKING_EMAIL_TO || 'obleafusion@gmail.com',
       subject:
         data.language === 'es'
           ? 'Nueva solicitud de reserva'
