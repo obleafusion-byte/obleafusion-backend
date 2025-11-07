@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="{{language}}" style="margin: 0; padding: 0; box-sizing: border-box;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{t.newBooking}} - ObleaFusion</title>
+    
+</head>
+<body style="margin: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, sans-serif; background-color: #f6f9fc; padding: 20px; line-height: 1.6;">
+    <div class="container" style="padding: 0; box-sizing: border-box; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div class="header" style="margin: 0; box-sizing: border-box; background: linear-gradient(135deg, #3d85c6 0%, #5a9fd4 100%); padding: 40px 30px; text-align: center;">
+            <img src="cid:obleafusionlogo" alt="ObleaFusion Logo" class="logo" style="margin: 0; padding: 0; box-sizing: border-box; max-width: 180px; height: auto; margin-bottom: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+        </div>
+
+        <div class="content" style="margin: 0; box-sizing: border-box; padding: 40px 30px;">
+            <h2 class="title" style="padding: 0; box-sizing: border-box; color: #1a1a1a; font-size: 28px; font-weight: 700; margin: 0 0 20px; line-height: 1.3;">{{t.title}}</h2>
+            <p class="text" style="padding: 0; box-sizing: border-box; color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 12px;">
+                {{t.greeting}} <strong style="margin: 0; padding: 0; box-sizing: border-box;">{{ownerName}}</strong>,
+            </p>
+            <p class="text" style="padding: 0; box-sizing: border-box; color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 12px;">{{t.newBooking}}</p>
+
+            <hr class="divider" style="padding: 0; box-sizing: border-box; border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+            <div class="section" style="padding: 0; box-sizing: border-box; margin: 24px 0; background-color: #ffffff;">
+                <h3 class="section-title" style="box-sizing: border-box; background: linear-gradient(135deg, #e69138 0%, #f5a352 100%); color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 16px; padding: 12px 16px; border-radius: 6px; line-height: 1.4;">👤 {{t.clientDetails}}</h3>
+                <table class="info-table" style="margin: 0; padding: 0; box-sizing: border-box; width: 100%; margin-bottom: 12px; border-collapse: collapse;" width="100%">
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.name}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{name}}</td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.email}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">
+                            <a href="mailto:{{email}}" style="margin: 0; padding: 0; box-sizing: border-box; color: #3d85c6; text-decoration: none; border-bottom: 2px solid #e69138; transition: all 0.3s ease;">{{email}}</a>
+                        </td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.phone}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{phone}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <hr class="divider" style="padding: 0; box-sizing: border-box; border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+            <div class="section" style="padding: 0; box-sizing: border-box; margin: 24px 0; background-color: #ffffff;">
+                <h3 class="section-title" style="box-sizing: border-box; background: linear-gradient(135deg, #e69138 0%, #f5a352 100%); color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 16px; padding: 12px 16px; border-radius: 6px; line-height: 1.4;">🎊 {{t.eventDetails}}</h3>
+                <table class="info-table" style="margin: 0; padding: 0; box-sizing: border-box; width: 100%; margin-bottom: 12px; border-collapse: collapse;" width="100%">
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.eventType}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{eventType}}</td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.date}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{formattedDate}}</td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.time}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{time}}</td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.duration}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{duration}} {{t.hours}}</td>
+                    </tr>
+                    {{#if guests}}
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.guests}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{guests}}</td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+
+            <hr class="divider" style="padding: 0; box-sizing: border-box; border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+            <div class="section" style="padding: 0; box-sizing: border-box; margin: 24px 0; background-color: #ffffff;">
+                <h3 class="section-title" style="box-sizing: border-box; background: linear-gradient(135deg, #e69138 0%, #f5a352 100%); color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 16px; padding: 12px 16px; border-radius: 6px; line-height: 1.4;">🍰 {{t.serviceDetails}}</h3>
+                <table class="info-table" style="margin: 0; padding: 0; box-sizing: border-box; width: 100%; margin-bottom: 12px; border-collapse: collapse;" width="100%">
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.serviceType}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{serviceType}}</td>
+                    </tr>
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.location}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{location}}</td>
+                    </tr>
+                    {{#if budget}}
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.budget}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">${{budget}}</td>
+                    </tr>
+                    {{/if}}
+                </table>
+                
+                {{#if desserts}}
+                <p class="info-label" style="margin: 0; padding: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; margin-top: 16px; margin-bottom: 8px;">{{t.desserts}}:</p>
+                <ul class="list" style="padding: 0; box-sizing: border-box; margin: 8px 0; padding-left: 20px;">
+                    {{#each desserts}}
+                    <li style="margin: 0; padding: 0; box-sizing: border-box; color: #2d3748; font-size: 15px; margin-bottom: 6px; line-height: 1.5;">{{this}}</li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+            </div>
+
+            {{#if comments}}
+            <hr class="divider" style="padding: 0; box-sizing: border-box; border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+            <div class="section" style="padding: 0; box-sizing: border-box; margin: 24px 0; background-color: #ffffff;">
+                <h3 class="section-title" style="box-sizing: border-box; background: linear-gradient(135deg, #e69138 0%, #f5a352 100%); color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 16px; padding: 12px 16px; border-radius: 6px; line-height: 1.4;">ℹ️ {{t.additionalInfo}}</h3>
+                
+                <p class="info-label" style="margin: 0; padding: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; margin-bottom: 8px;">{{t.comments}}:</p>
+                <div class="comment-box" style="margin: 0; box-sizing: border-box; background-color: #f7fafc; border-left: 4px solid #3d85c6; padding: 16px; border-radius: 4px; margin-top: 8px;">
+                    <p class="comment-text" style="padding: 0; box-sizing: border-box; color: #2d3748; font-size: 15px; line-height: 1.6; margin: 0; font-style: italic;">{{comments}}</p>
+                </div>
+
+                {{#if referralSource}}
+                <table class="info-table" style="margin: 0; padding: 0; box-sizing: border-box; width: 100%; margin-bottom: 12px; border-collapse: collapse; margin-top: 16px;" width="100%">
+                    <tr style="margin: 0; padding: 0; box-sizing: border-box;">
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.referralSource}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{referralSource}}</td>
+                    </tr>
+                </table>
+                {{/if}}
+            </div>
+            {{/if}}
+
+            <hr class="divider" style="padding: 0; box-sizing: border-box; border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;">
+
+            <div class="section" style="padding: 0; box-sizing: border-box; margin: 24px 0; background-color: #ffffff;">
+                <p class="footer-message" style="padding: 0; box-sizing: border-box; color: #4a5568; font-size: 15px; line-height: 1.6; margin: 0 0 24px; text-align: center;">{{t.footer}}</p>
+                <div class="button-container" style="padding: 0; box-sizing: border-box; text-align: center; margin: 24px 0;">
+                    <a href="mailto:{{email}}?subject=Re: {{bookingSubject}} {{formattedDate}}" class="button" style="margin: 0; box-sizing: border-box; display: inline-block; background: linear-gradient(135deg, #e69138 0%, #f5a352 100%); border-radius: 8px; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; box-shadow: 0 4px 12px rgba(230, 145, 56, 0.3); transition: all 0.3s ease; color: #ffffff;">
+                        {{t.contactClient}}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer" style="margin: 0; box-sizing: border-box; background-color: #f7fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+            <p class="footer-text" style="padding: 0; box-sizing: border-box; color: #718096; font-size: 13px; line-height: 1.5; margin: 0;">
+                © {{year}} ObleaFusion. {{t.allRightsReserved}}.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

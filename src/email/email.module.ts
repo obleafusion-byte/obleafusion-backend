@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { EmailService } from './email.service';
-import { EmailController } from './email.controller'; // ← Importa el controller
+import { EmailController } from './email.controller';
 
 @Module({
   imports: [
@@ -23,19 +23,18 @@ import { EmailController } from './email.controller'; // ← Importa el controll
         defaults: {
           from: `"ObleaFusion" <${configService.get<string>('MAIL_FROM', 'noreply@obleafusion.com')}>`,
         },
-        // ← Puedes remover la parte de templates si usas HTML directo
-        // template: {
-        //   dir: join(__dirname, 'templates'),
-        //   adapter: new HandlebarsAdapter(),
-        //   options: {
-        //     strict: true,
-        //   },
-        // },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
       }),
       inject: [ConfigService],
     }),
   ],
-  controllers: [EmailController], // ← AGREGA ESTO
+  controllers: [EmailController],
   providers: [EmailService],
   exports: [EmailService],
 })

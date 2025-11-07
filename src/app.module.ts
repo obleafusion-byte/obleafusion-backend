@@ -5,9 +5,9 @@ import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // ← Hace que ConfigModule esté disponible globalmente
+      isGlobal: true,
     }),
-    EmailModule, // ← Solo importa el EmailModule
+    EmailModule,
   ],
   controllers: [],
   providers: [],
