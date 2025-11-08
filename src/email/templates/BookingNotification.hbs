@@ -81,8 +81,13 @@
                         <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{serviceType}}</td>
                     </tr>
                     <tr style="margin: 0; padding: 0; box-sizing: border-box;">
-                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.location}}:</td>
-                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">{{location}}</td>
+                        <td class="info-label" style="margin: 0; box-sizing: border-box; color: #718096; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%; padding: 8px 0; vertical-align: top;" width="40%" valign="top">{{t.address}}:</td>
+                        <td class="info-value" style="margin: 0; box-sizing: border-box; color: #2d3748; font-size: 16px; font-weight: 400; width: 60%; padding: 8px 0; vertical-align: top;" width="60%" valign="top">
+                            {{addressLine1}}<br>
+                            {{#if addressLine2}}{{addressLine2}}<br>{{/if}}
+                            {{city}}, {{state}} {{zipCode}}<br>
+                            {{country}}
+                        </td>
                     </tr>
                     {{#if budget}}
                     <tr style="margin: 0; padding: 0; box-sizing: border-box;">

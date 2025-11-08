@@ -2,6 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { BookingData } from './interfaces/BookingData.interface';
 import { ContactData } from './interfaces/ContactData.interface';
+import { Attachment } from 'nodemailer/lib/mailer';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class EmailService {
@@ -13,6 +16,30 @@ export class EmailService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const t = this.getBookingTranslations(data.language);
+
+      // ✅ Tipar attachments correctamente
+      const attachments: Attachment[] = [];
+
+      try {
+        const logoPath = path.join(__dirname, 'templates', 'logo.png');
+
+        if (fs.existsSync(logoPath)) {
+          attachments.push({
+            filename: 'logo.png',
+            path: logoPath,
+            cid: 'obleafusionlogo',
+          });
+        } else {
+          this.logger.warn('Logo file not found, sending email without logo');
+        }
+      } catch (logoError) {
+        this.logger.warn(
+          'Failed to load logo, continuing without it:',
+          logoError,
+        );
+      }
+
+      // ✅ Enviar el correo
       await this.mailerService.sendMail({
         to: process.env.BOOKING_EMAIL_TO || 'florezmnj@gmail.com',
         subject:
@@ -20,13 +47,7 @@ export class EmailService {
             ? 'Nueva solicitud de reserva'
             : 'New Booking Request',
         template: 'BookingNotification',
-        attachments: [
-          {
-            filename: 'logo.png',
-            path: __dirname + '/templates/logo.png',
-            cid: 'obleafusionlogo',
-          },
-        ],
+        attachments,
         context: {
           name: data.name,
           email: data.email,
@@ -39,7 +60,18 @@ export class EmailService {
           serviceType: this.getServiceType(data),
           desserts: data.desserts,
           budget: data.budget,
-          location: data.location,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          addressLine1: data.addressLine1,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          addressLine2: data.addressLine2,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          city: data.city,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          state: data.state,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          country: data.country,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          zipCode: data.zipCode,
           comments: data.comments,
           referralSource: this.getReferralSource(data),
           language: data.language === 'es' ? 'es' : 'en',
@@ -47,7 +79,7 @@ export class EmailService {
           year: new Date().getFullYear(),
           bookingSubject: data.language === 'es' ? 'Reserva' : 'Booking',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          t: t,
+          t,
         },
       });
 
@@ -58,7 +90,6 @@ export class EmailService {
         `Failed to send booking email to ${data.email}`,
         error instanceof Error ? error.stack : String(error),
       );
-      // No lanzamos el error para que no detenga la aplicación
       return false;
     }
   }
@@ -67,6 +98,31 @@ export class EmailService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const t = this.getContactTranslations(data.language);
+
+      // ✅ Tipar attachments correctamente
+      const attachments: Attachment[] = [];
+
+      // Intentar cargar el logo
+      try {
+        const logoPath = path.join(__dirname, 'templates', 'logo.png');
+
+        if (fs.existsSync(logoPath)) {
+          attachments.push({
+            filename: 'logo.png',
+            path: logoPath,
+            cid: 'obleafusionlogo',
+          });
+        } else {
+          this.logger.warn('Logo file not found, sending email without logo');
+        }
+      } catch (logoError) {
+        this.logger.warn(
+          'Failed to load logo, continuing without it:',
+          logoError,
+        );
+      }
+
+      // ✅ Enviar el correo
       await this.mailerService.sendMail({
         to: process.env.CONTACT_EMAIL_TO || 'florezmnj@gmail.com',
         subject:
@@ -74,13 +130,7 @@ export class EmailService {
             ? 'Nuevo mensaje de contacto'
             : 'New Contact Message',
         template: 'ContactUs',
-        attachments: [
-          {
-            filename: 'logo.png',
-            path: __dirname + '/templates/logo.png',
-            cid: 'obleafusionlogo',
-          },
-        ],
+        attachments, // ya tipado correctamente
         context: {
           name: data.name,
           email: data.email,
@@ -90,7 +140,7 @@ export class EmailService {
           ownerName: process.env.OWNER_NAME || 'Equipo ObleaFusion',
           year: new Date().getFullYear(),
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          t: t,
+          t,
         },
       });
 
@@ -101,7 +151,6 @@ export class EmailService {
         `Failed to send contact email to ${data.email}`,
         error instanceof Error ? error.stack : String(error),
       );
-      // No lanzamos el error para que no detenga la aplicación
       return false;
     }
   }
@@ -182,6 +231,7 @@ export class EmailService {
   private getBookingTranslations(language: string) {
     const translations = {
       es: {
+        address: 'Dirección',
         title: '🎉 Nueva Reserva Recibida',
         greeting: 'Hola',
         newBooking:
@@ -234,6 +284,7 @@ export class EmailService {
         },
       },
       en: {
+        address: 'Address',
         title: '🎉 New Booking Received',
         greeting: 'Hello',
         newBooking:
