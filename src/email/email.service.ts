@@ -1,412 +1,241 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { BookingData } from './interfaces/BookingData.interface';
+import { ContactData } from './interfaces/ContactData.interface';
+import { Attachment } from 'nodemailer/lib/mailer';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
+
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendBookingEmail(data: BookingData) {
-    const html = this.generateBookingEmailHtml(data);
+  async sendBookingEmail(data: BookingData): Promise<boolean> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getBookingTranslations(data.language);
 
-    await this.mailerService.sendMail({
-      to: process.env.BOOKING_EMAIL_TO || 'obleafusion@gmail.com',
-      subject:
-        data.language === 'es'
-          ? 'Nueva solicitud de reserva'
-          : 'New Booking Request',
-      html,
-    });
+      // ✅ Tipar attachments correctamente
+      const attachments: Attachment[] = [];
+
+      try {
+        const logoPath = path.join(__dirname, 'templates', 'logo.png');
+
+        if (fs.existsSync(logoPath)) {
+          attachments.push({
+            filename: 'logo.png',
+            path: logoPath,
+            cid: 'obleafusionlogo',
+          });
+        } else {
+          this.logger.warn('Logo file not found, sending email without logo');
+        }
+      } catch (logoError) {
+        this.logger.warn(
+          'Failed to load logo, continuing without it:',
+          logoError,
+        );
+      }
+
+      // ✅ Enviar el correo
+      await this.mailerService.sendMail({
+        to: process.env.BOOKING_EMAIL_TO || 'florezmnj@gmail.com',
+        subject:
+          data.language === 'es'
+            ? 'Nueva solicitud de reserva'
+            : 'New Booking Request',
+        template: 'BookingNotification',
+        attachments,
+        context: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          eventType: this.getEventType(data),
+          formattedDate: this.formatDate(data.date, data.language),
+          time: data.time,
+          duration: data.duration,
+          guests: data.guests,
+          serviceType: this.getServiceType(data),
+          desserts: data.desserts,
+          budget: data.budget,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          addressLine1: data.addressLine1,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          addressLine2: data.addressLine2,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          city: data.city,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          state: data.state,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          country: data.country,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          zipCode: data.zipCode,
+          comments: data.comments,
+          referralSource: this.getReferralSource(data),
+          language: data.language === 'es' ? 'es' : 'en',
+          ownerName: process.env.OWNER_NAME || 'Equipo ObleaFusion',
+          year: new Date().getFullYear(),
+          bookingSubject: data.language === 'es' ? 'Reserva' : 'Booking',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          t,
+        },
+      });
+
+      this.logger.log(`Booking email sent successfully to ${data.email}`);
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `Failed to send booking email to ${data.email}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      return false;
+    }
   }
 
-  private generateBookingEmailHtml(data: BookingData): string {
-    const t = this.getTranslations(data.language);
-    const formattedDate = this.formatDate(data.date, data.language);
-    const eventType = this.getEventType(data);
-    const serviceType = this.getServiceType(data);
-    const referralSource = this.getReferralSource(data);
+  async sendContactEmail(data: ContactData): Promise<boolean> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getContactTranslations(data.language);
 
-    return `
-<!DOCTYPE html>
-<html lang="${data.language === 'es' ? 'es' : 'en'}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${t.newBooking} - ObleaFusion</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
-            background-color: #f6f9fc;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header {
-            background: #3d85c6;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        
-        .logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin: 0;
-        }
-        
-        .header p {
-            color: #e0e7ff;
-            font-size: 14px;
-            font-weight: 400;
-            margin: 8px 0 0 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        
-        .content {
-            padding: 40px 30px;
-        }
-        
-        .title {
-            color: #1a1a1a;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 20px;
-            line-height: 1.3;
-        }
-        
-        .text {
-            color: #4a5568;
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 0 0 12px;
-        }
-        
-        .section {
-            margin: 24px 0;
-        }
-        
-        .section-title {
-            background-color: #e69138;
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 16px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            line-height: 1.4;
-        }
-        
-        .divider {
-            border: none;
-            border-top: 1px solid #e2e8f0;
-            margin: 32px 0;
-        }
-        
-        .info-table {
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        
-        .info-table td {
-            padding: 6px 0;
-            vertical-align: top;
-        }
-        
-        .info-label {
-            color: #718096;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 40%;
-        }
-        
-        .info-value {
-            color: #2d3748;
-            font-size: 16px;
-            font-weight: 400;
-            width: 60%;
-        }
-        
-        .info-value a {
-            color: #667eea;
-            text-decoration: underline;
-        }
-        
-        .list {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        
-        .list li {
-            color: #2d3748;
-            font-size: 15px;
-            margin-bottom: 6px;
-            line-height: 1.5;
-        }
-        
-        .comment-box {
-            background-color: #f7fafc;
-            border-left: 4px solid #667eea;
-            padding: 16px;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
-        
-        .comment-text {
-            color: #2d3748;
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 0;
-            font-style: italic;
-        }
-        
-        .button-container {
-            text-align: center;
-            margin: 24px 0;
-        }
-        
-        .button {
-            display: inline-block;
-            background-color: #e69138;
-            border-radius: 8px;
-            color: #ffffff !important;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 14px 32px;
-            box-shadow: 0 2px 4px rgba(230, 145, 56, 0.3);
-        }
-        
-        .footer-message {
-            color: #4a5568;
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 0 0 24px;
-            text-align: center;
-        }
-        
-        .footer {
-            background-color: #f7fafc;
-            padding: 24px 30px;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .footer-text {
-            color: #718096;
-            font-size: 13px;
-            line-height: 1.5;
-            margin: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <img src="assets/ObleaFusion-Orange-logo.png" alt="ObleaFusion Logo" class="logo">
-            <h1>ObleaFusion</h1>
-            <p>Premium Dessert Services</p>
-        </div>
+      // ✅ Tipar attachments correctamente
+      const attachments: Attachment[] = [];
 
-        <div class="content">
-            <h2 class="title">${t.title}</h2>
-            <p class="text">
-                ${t.greeting} <strong>${process.env.OWNER_NAME || 'Equipo ObleaFusion'}</strong>,
-            </p>
-            <p class="text">${t.newBooking}</p>
+      // Intentar cargar el logo
+      try {
+        const logoPath = path.join(__dirname, 'templates', 'logo.png');
 
-            <hr class="divider">
+        if (fs.existsSync(logoPath)) {
+          attachments.push({
+            filename: 'logo.png',
+            path: logoPath,
+            cid: 'obleafusionlogo',
+          });
+        } else {
+          this.logger.warn('Logo file not found, sending email without logo');
+        }
+      } catch (logoError) {
+        this.logger.warn(
+          'Failed to load logo, continuing without it:',
+          logoError,
+        );
+      }
 
-            <div class="section">
-                <h3 class="section-title">👤 ${t.clientDetails}</h3>
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">${t.name}:</td>
-                        <td class="info-value">${data.name}</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">${t.email}:</td>
-                        <td class="info-value">
-                            <a href="mailto:${data.email}">${data.email}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">${t.phone}:</td>
-                        <td class="info-value">${data.phone}</td>
-                    </tr>
-                </table>
-            </div>
+      // ✅ Enviar el correo
+      await this.mailerService.sendMail({
+        to: process.env.CONTACT_EMAIL_TO || 'florezmnj@gmail.com',
+        subject:
+          data.language === 'es'
+            ? 'Nuevo mensaje de contacto'
+            : 'New Contact Message',
+        template: 'ContactUs',
+        attachments, // ya tipado correctamente
+        context: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          referralSource: this.getContactReferralSource(data),
+          language: data.language === 'es' ? 'es' : 'en',
+          ownerName: process.env.OWNER_NAME || 'Equipo ObleaFusion',
+          year: new Date().getFullYear(),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          t,
+        },
+      });
 
-            <hr class="divider">
-
-            <div class="section">
-                <h3 class="section-title">🎊 ${t.eventDetails}</h3>
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">${t.eventType}:</td>
-                        <td class="info-value">${eventType}</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">${t.date}:</td>
-                        <td class="info-value">${formattedDate}</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">${t.time}:</td>
-                        <td class="info-value">${data.time}</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">${t.duration}:</td>
-                        <td class="info-value">${data.duration} ${t.hours}</td>
-                    </tr>
-                    ${data.guests ? `
-                    <tr>
-                        <td class="info-label">${t.guests}:</td>
-                        <td class="info-value">${data.guests}</td>
-                    </tr>
-                    ` : ''}
-                </table>
-            </div>
-
-            <hr class="divider">
-
-            <div class="section">
-                <h3 class="section-title">🍰 ${t.serviceDetails}</h3>
-                <table class="info-table">
-                    <tr>
-                        <td class="info-label">${t.serviceType}:</td>
-                        <td class="info-value">${serviceType}</td>
-                    </tr>
-                </table>
-                
-                ${data.desserts && data.desserts.length > 0 ? `
-                <p class="info-label" style="margin-top: 12px;">${t.desserts}:</p>
-                <ul class="list">
-                    ${data.desserts.map(dessert => `<li>${dessert}</li>`).join('')}
-                </ul>
-                ` : ''}
-
-                <table class="info-table" style="margin-top: 12px;">
-                    ${data.budget ? `
-                    <tr>
-                        <td class="info-label">${t.budget}:</td>
-                        <td class="info-value">$${data.budget}</td>
-                    </tr>
-                    ` : ''}
-                    <tr>
-                        <td class="info-label">${t.location}:</td>
-                        <td class="info-value">${data.location}</td>
-                    </tr>
-                </table>
-            </div>
-
-            ${data.comments || data.referralSource ? `
-            <hr class="divider">
-
-            <div class="section">
-                <h3 class="section-title">ℹ️ ${t.additionalInfo}</h3>
-                
-                ${data.comments ? `
-                <p class="info-label">${t.comments}:</p>
-                <div class="comment-box">
-                    <p class="comment-text">${data.comments}</p>
-                </div>
-                ` : ''}
-
-                ${data.referralSource ? `
-                <table class="info-table" style="margin-top: 16px;">
-                    <tr>
-                        <td class="info-label">${t.referralSource}:</td>
-                        <td class="info-value">${referralSource}</td>
-                    </tr>
-                </table>
-                ` : ''}
-            </div>
-            ` : ''}
-
-            <hr class="divider">
-
-            <div class="section">
-                <p class="footer-message">${t.footer}</p>
-                <div class="button-container">
-                    <a href="mailto:${data.email}?subject=Re: ${data.language === 'es' ? 'Reserva' : 'Booking'} ${formattedDate}" class="button">
-                        ${t.contactClient}
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p class="footer-text">
-                © ${new Date().getFullYear()} ObleaFusion. ${t.allRightsReserved}.
-            </p>
-        </div>
-    </div>
-</body>
-</html>
-    `.trim();
+      this.logger.log(`Contact email sent successfully to ${data.email}`);
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `Failed to send contact email to ${data.email}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      return false;
+    }
   }
 
   private formatDate(dateStr: string, language: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString(
-      language === 'es' ? 'es-ES' : 'en-US',
-      {
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        this.logger.warn(`Invalid date format: ${dateStr}`);
+        return dateStr; // Devolvemos el string original si la fecha es inválida
+      }
+
+      return date.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      }
-    );
+      });
+    } catch (error) {
+      this.logger.error(`Error formatting date: ${dateStr}`, error);
+      return dateStr;
+    }
   }
 
   private getEventType(data: BookingData): string {
-    const t = this.getTranslations(data.language);
-    const eventKey = data.eventType.replace(/\s+/g, '_');
-    return t.eventTypes[eventKey] || data.otherEvent || data.eventType;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getBookingTranslations(data.language);
+      const eventKey = data.eventType.replace(/\s+/g, '_');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      return t.eventTypes[eventKey] || data.otherEvent || data.eventType;
+    } catch (error) {
+      this.logger.error('Error getting event type', error);
+      return data.eventType || 'Unknown';
+    }
   }
 
   private getServiceType(data: BookingData): string {
-    const t = this.getTranslations(data.language);
-    return t.serviceTypes[data.serviceType] || data.serviceType;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getBookingTranslations(data.language);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      return t.serviceTypes[data.serviceType] || data.serviceType;
+    } catch (error) {
+      this.logger.error('Error getting service type', error);
+      return data.serviceType || 'Unknown';
+    }
   }
 
   private getReferralSource(data: BookingData): string {
-    if (!data.referralSource) return '';
-    const t = this.getTranslations(data.language);
-    const referralKey = data.referralSource.replace(/\s+/g, '_');
-    return t.referralSources[referralKey] || data.referralSource;
+    try {
+      if (!data.referralSource) return '';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getBookingTranslations(data.language);
+      const referralKey = data.referralSource.replace(/\s+/g, '_');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      return t.referralSources[referralKey] || data.referralSource;
+    } catch (error) {
+      this.logger.error('Error getting referral source', error);
+      return data.referralSource || '';
+    }
   }
 
-  private getTranslations(language: string) {
+  private getContactReferralSource(data: ContactData): string {
+    try {
+      if (!data.referralSource) return '';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const t = this.getContactTranslations(data.language);
+      const referralKey = data.referralSource.replace(/\s+/g, '_');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      return t.referralSources[referralKey] || data.referralSource;
+    } catch (error) {
+      this.logger.error('Error getting contact referral source', error);
+      return data.referralSource || '';
+    }
+  }
+
+  private getBookingTranslations(language: string) {
     const translations = {
       es: {
+        address: 'Dirección',
         title: '🎉 Nueva Reserva Recibida',
         greeting: 'Hola',
-        newBooking: 'Has recibido una nueva solicitud de reserva. A continuación los detalles:',
+        newBooking:
+          'Has recibido una nueva solicitud de reserva. A continuación los detalles:',
         clientDetails: 'Datos del Cliente',
         name: 'Nombre',
         email: 'Email',
@@ -426,7 +255,8 @@ export class EmailService {
         additionalInfo: 'Información Adicional',
         comments: 'Comentarios',
         referralSource: '¿Cómo nos conoció?',
-        footer: 'Por favor responde a esta solicitud lo antes posible para confirmar disponibilidad.',
+        footer:
+          'Por favor responde a esta solicitud lo antes posible para confirmar disponibilidad.',
         contactClient: 'Contactar Cliente',
         allRightsReserved: 'Todos los derechos reservados',
         eventTypes: {
@@ -448,14 +278,17 @@ export class EmailService {
           Facebook: 'Facebook',
           Google: 'Google',
           Friend: 'Recomendación de un amigo',
+          'Radio_/_TV': 'Radio / TV',
           Event: 'En un evento',
           Other: 'Otro',
         },
       },
       en: {
+        address: 'Address',
         title: '🎉 New Booking Received',
         greeting: 'Hello',
-        newBooking: 'You have received a new booking request. Here are the details:',
+        newBooking:
+          'You have received a new booking request. Here are the details:',
         clientDetails: 'Client Details',
         name: 'Name',
         email: 'Email',
@@ -475,7 +308,8 @@ export class EmailService {
         additionalInfo: 'Additional Information',
         comments: 'Comments',
         referralSource: 'How did you hear about us?',
-        footer: 'Please respond to this request as soon as possible to confirm availability.',
+        footer:
+          'Please respond to this request as soon as possible to confirm availability.',
         contactClient: 'Contact Client',
         allRightsReserved: 'All rights reserved',
         eventTypes: {
@@ -497,12 +331,88 @@ export class EmailService {
           Facebook: 'Facebook',
           Google: 'Google',
           Friend: 'Friend referral',
+          'Radio_/_TV': 'Radio / TV',
           Event: 'At an event',
           Other: 'Other',
         },
       },
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return translations[language] || translations.es;
+  }
+
+  private getContactTranslations(language: string) {
+    const translations = {
+      es: {
+        title: 'Nuevo Mensaje de Contacto',
+        greeting: '¡Hola',
+        newContact: 'Nuevo Mensaje de Contacto',
+        newContactMessage:
+          'Una persona está interesada en tus servicios y quiere ponerse en contacto contigo.',
+        contactInfo: 'Información de Contacto',
+        name: 'Nombre',
+        email: 'Email',
+        phone: 'Teléfono',
+        referralSource: '¿Cómo nos conoció?',
+        ctaMessage:
+          'No dejes esperando a tu cliente. ¡Responde ahora y cierra esa venta! 🎯',
+        replyNow: 'Responder Ahora',
+        callDirectly: 'Llamar Directamente',
+        replySubject: 'Re: Contacto desde ObleaFusion',
+        proTip: 'Consejo Profesional',
+        tipMessage:
+          'Los clientes que reciben una respuesta en las primeras 24 horas tienen un 80% más de probabilidades de contratar el servicio. ¡La velocidad importa!',
+        tagline: 'Creando momentos dulces e inolvidables',
+        allRightsReserved: 'Todos los derechos reservados.',
+        autoGenerated:
+          'Este correo fue generado automáticamente por tu sistema de contacto.',
+        referralSources: {
+          Instagram: 'Instagram',
+          Facebook: 'Facebook',
+          Google: 'Google',
+          Friend: 'Recomendación de un amigo',
+          'Radio_/_TV': 'Radio / TV',
+          Event: 'En un evento',
+          Other: 'Otro',
+        },
+      },
+      en: {
+        title: 'New Contact Message',
+        greeting: 'Hello',
+        newContact: 'New Contact Message',
+        newContactMessage:
+          'Someone is interested in your services and wants to get in touch with you.',
+        contactInfo: 'Contact Information',
+        name: 'Name',
+        email: 'Email',
+        phone: 'Phone',
+        referralSource: 'How did you hear about us?',
+        ctaMessage:
+          "Don't keep your client waiting. Respond now and close that sale! 🎯",
+        replyNow: 'Reply Now',
+        callDirectly: 'Call Directly',
+        replySubject: 'Re: Contact from ObleaFusion',
+        proTip: 'Pro Tip',
+        tipMessage:
+          'Clients who receive a response within the first 24 hours are 80% more likely to hire the service. Speed matters!',
+        tagline: 'Creating sweet and unforgettable moments',
+        allRightsReserved: 'All rights reserved.',
+        autoGenerated:
+          'This email was automatically generated by your contact system.',
+        referralSources: {
+          Instagram: 'Instagram',
+          Facebook: 'Facebook',
+          Google: 'Google',
+          Friend: 'Friend referral',
+          'Radio_/_TV': 'Radio / TV',
+          Event: 'At an event',
+          Other: 'Other',
+        },
+      },
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return translations[language] || translations.es;
   }
 }

@@ -3,6 +3,7 @@
 export type Language = 'es' | 'en';
 
 export interface BookingTranslations {
+  address: string;
   subject: string;
   greeting: string;
   title: string;
@@ -55,6 +56,7 @@ export interface BookingTranslations {
 
 export const translations: Record<Language, BookingTranslations> = {
   es: {
+    address: 'Dirección',
     subject: '🎉 Nueva Reserva de Servicio - ObleaFusion',
     greeting: 'Hola',
     title: 'Nueva Solicitud de Reserva',
@@ -106,6 +108,7 @@ export const translations: Record<Language, BookingTranslations> = {
     },
   },
   en: {
+    address: 'Address',
     subject: '🎉 New Service Booking - ObleaFusion',
     greeting: 'Hello',
     title: 'New Booking Request',
